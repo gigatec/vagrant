@@ -4,5 +4,5 @@
 cd /vagrant/public/app/etc/
 cp local.xml.vagrant local.xml
 
-# Clear magento cache
-mageclean
+# Import DB (if not exists)
+mageimport

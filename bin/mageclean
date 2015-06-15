@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 # Clear magento cache
+echo 'Clear magento cache...'
 rm -rf /vagrant/public/var/cache/*
