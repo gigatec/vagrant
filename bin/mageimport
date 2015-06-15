@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Get Magento settings
+cd /vagrant/public/
+MAGE_PREFIX="$(magerun db:info prefix)"
+
+# Import DB dump
+echo 'Import DB dump...'
+cd /vagrant/private/
+for dump in current*.sql.gz; do
+	db="$(echo $dump | sed -n 's/current-\(.*\).sql.gz/\1/gp')"
+	db="${db:-magento}"
+	
+	# Create database
+	echo 'CREATE DATABASE IF NOT EXISTS '$db';' | mysql -u root
+	
+	# Import
+	zcat $dump | mysql -u root $db
+	
+	# Adjust DB
+	echo 'UPDATE '$MAGE_PREFIX'core_config_data SET value="http://localhost:8080/" WHERE path="web/unsecure/base_url";' | mysql -u root $db
+	echo 'UPDATE '$MAGE_PREFIX'core_config_data SET value="http://localhost:8080/" WHERE path="web/secure/base_url";' | mysql -u root $db
+	echo 'UPDATE '$MAGE_PREFIX'core_config_data SET value=0 WHERE path="web/cookie/cookie_httponly";' | mysql -u root $db
+done
+
+# Clear magento cache
+rm -rf /vagrant/public/var/cache/*
