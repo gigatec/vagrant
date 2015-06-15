@@ -3,9 +3,9 @@
 # Get Magento settings
 cd /vagrant/public/
 if [ $(id -u) = "0" ]; then
-	MAGE_PREFIX="$(su vagrant -c "magerun db:info prefix")"
+	MAGE_PREFIX="$(su vagrant -c "magerun db:info prefix" 2> /dev/null)"
 else
-	MAGE_PREFIX="$(magerun db:info prefix)"
+	MAGE_PREFIX="$(magerun db:info prefix 2> /dev/null)"
 fi
 
 # Import DB dump

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Ignore the post install questions
+export DEBIAN_FRONTEND=noninteractive
+
 # Update Apt
 # --------------------
 echo 'Update Apt...'
@@ -64,8 +67,6 @@ cp local.xml.vagrant local.xml
 
 # Mysql
 # --------------------
-# Ignore the post install questions
-export DEBIAN_FRONTEND=noninteractive
 # Install MySQL quietly
 echo 'Install MySQL...'
 apt-get -q -y install mysql-server-5.5
@@ -78,6 +79,3 @@ sudo chmod +x /usr/local/bin/*
 echo 'alias dir="ls -al"' >> /etc/profile
 echo 'alias root="sudo -i"' >> /etc/profile
 echo 'cd /vagrant/public' >> /etc/profile
-
-# Import DB
-mageimport
