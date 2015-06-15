@@ -1,0 +1,88 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+if ARGV[0] == 'up' and ARGV[1]
+  system "echo export RAILS_ENV=#{ARGV[1]}_development > .vagrant/environment"
+  exec "vagrant up"
+end
+
+# Install required plugins
+required_plugins = %w(vagrant-exec vagrant-triggers)
+required_plugins += %w(vagrant-winnfsd) if Vagrant::Util::Platform.windows?
+plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+if not plugins_to_install.empty?
+	puts "Installing plugins: #{plugins_to_install.join(' ')}"
+	system "vagrant plugin install #{plugins_to_install.join(' ')}"
+	exec "vagrant #{ARGV.join(' ')}"
+end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.host_name = "<project>.local"
+
+  config.vm.network "private_network", type: "dhcp"
+
+  # Use Ubuntu 14.04 Trusty Tahr 64-bit as our operating system
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.synced_folder ".", "/vagrant", type: "nfs"
+
+  # Configurate the virtual machine to use 2GB of RAM
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
+	#vb.customize ["modifyvm", :id, "--cpus", "4"]
+	vb.name = "<project>"
+  end
+
+  config.trigger.before :up do
+    run 'git submodule update --init'
+  end
+    
+  [:up, :reload].each do |cmd|
+    config.trigger.after cmd do
+      run_remote '/usr/bin/env bash /vagrant/vagrant/ruby/boot.sh'
+    end
+  end
+
+  # Forward the Rails server default port to the host
+  config.vm.network :forwarded_port, guest: 3000, host: 3000
+
+  # Use Chef Solo to provision our virtual machine
+  config.vm.provision :chef_solo do |chef|
+    chef.cookbooks_path = ["cookbooks", "site-cookbooks"]
+
+    chef.add_recipe "apt"
+    chef.add_recipe "nodejs"
+    chef.add_recipe "ruby_build"
+    chef.add_recipe "rbenv::user"
+    chef.add_recipe "rbenv::vagrant"
+    chef.add_recipe "vim"
+    chef.add_recipe "mysql::server"
+    chef.add_recipe "mysql::client"
+
+    # Install Ruby 2.2.1 and Bundler
+    # Set an empty root password for MySQL to make things simple
+    chef.json = {
+      rbenv: {
+        user_installs: [{
+          user: 'vagrant',
+          rubies: ["2.2.1"],
+          global: "2.2.1",
+          gems: {
+            "2.2.1" => [
+              { name: "bundler" }
+            ]
+          }
+        }]
+      },
+      mysql: {
+        server_root_password: ''
+      }
+    }
+  end
+
+  config.vm.provision :shell, :path => "vagrant/ruby/init.sh"
+
+end
