@@ -2,7 +2,7 @@
 
 # Get Magento settings
 cd /vagrant/public/
-MAGE_PREFIX="$(magerun db:info prefix)"
+MAGE_PREFIX="$(su vagrant -c "magerun db:info prefix")"
 
 # Import DB dump
 echo 'Import DB dump...'
