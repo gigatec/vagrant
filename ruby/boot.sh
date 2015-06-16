@@ -8,4 +8,5 @@ echo "Loading Rails environment: $RAILS_ENV"
 rubyimport
 
 # Run Rails server
+rm -f /vagrant/rails/tmp/pids/server.pid
 su - vagrant -c "cd /vagrant/rails; export RAILS_ENV=$RAILS_ENV; bundle exec rails s -d"
