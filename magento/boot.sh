@@ -20,3 +20,5 @@ fi
 
 echo 'Magento Frontend: http://localhost:8080/'
 echo 'Magento Backend: http://localhost:8080/'$MAGE_BACKEND'/'
+echo 'PHPMyAdmin: http://localhost:8080/phpmyadmin/ (User: root, Pass: )'
+echo 'Webmail: http://localhost:8080/roundcube/ (User: vagrant, Pass: vagrant, Host: localhost)'

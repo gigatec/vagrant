@@ -79,3 +79,33 @@ sudo chmod +x /usr/local/bin/*
 echo 'alias dir="ls -al"' >> /etc/profile
 echo 'alias root="sudo -i"' >> /etc/profile
 echo 'cd /vagrant/public' >> /etc/profile
+
+# install mailling softtware
+apt-get install -y postfix courier-imap roundcube
+
+# activate history page up/down in inputrc
+sed 's/^# \(.*history-search.*\)$/\1/g' -i /etc/inputrc 
+
+# activate AllowNoPassword in phpmyadmin config
+sed 's#// \(.*AllowNoPassword.*\)$#\1#g' -i /etc/phpmyadmin/config.inc.php
+
+# modify postfix main.cf
+cat >> /etc/postfix/main.cf << EOF
+home_mailbox = Maildir/
+mailbox_command = 
+always_bcc = vagrant@localhost
+EOF
+
+# disable postfix bouncing
+sed 's/^.*bounce.*$/#\0/g' -i /etc/postfix/master.cf
+
+# activate roundcube aliases
+sed 's/^# *\(.*Alias.*\)$/\1/g' -i /etc/roundcube/apache.conf
+
+# fix roundcube permissions
+chown vagrant /etc/roundcube/ -R
+
+# restart services
+service apache2 restart
+service postfix restart
+service courier-imap restart
