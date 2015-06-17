@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /vagrant/private
+mysqldump -u root vagrant | gzip > current.sql.gz
