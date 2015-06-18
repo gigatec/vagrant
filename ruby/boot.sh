@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+sed 's/\r//g' -i /vagrant/.vagrant/environment
 source /vagrant/.vagrant/environment
 export RAILS_ENV=${RAILS_ENV:-development}
 echo "Loading Rails environment: $RAILS_ENV"
