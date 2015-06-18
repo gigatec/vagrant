@@ -4,6 +4,10 @@
 cd /vagrant/public/app/etc/
 cp local.xml.vagrant local.xml
 
+# Remount Dynamic data
+mkdir -m 777 -p /vagrant_guest/public/var
+mount -o bind /vagrant_guest/public/var /vagrant/public/var
+
 # Import DB (if not exists)
 mageimport
 
