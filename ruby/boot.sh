@@ -5,6 +5,11 @@ source /vagrant/.vagrant/environment
 export RAILS_ENV=${RAILS_ENV:-development}
 echo "Loading Rails environment: $RAILS_ENV"
 
+# Remount Dynamic data
+mkdir -m 777 -p /vagrant_guest/rails/tmp /vagrant_guest/rails/log
+mount -o bind /vagrant_guest/rails/tmp /vagrant/rails/tmp
+mount -o bind /vagrant_guest/rails/log /vagrant/rails/log
+
 # Import DB (if not exists)
 rubyimport
 
