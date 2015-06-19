@@ -5,6 +5,12 @@
 # Ignore the post install questions
 export DEBIAN_FRONTEND=noninteractive
 
+# Activate mysql root user from outside
+mysql -u root <<EOF
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '';
+FLUSH PRIVILEGES;
+EOF
+
 # Copy custom commands to /usr/local/bin
 sudo cp /vagrant/vagrant/bin/* /usr/local/bin
 sudo chmod +x /usr/local/bin/*

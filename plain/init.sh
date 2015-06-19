@@ -73,6 +73,12 @@ service apache2 restart
 echo 'Install MySQL...'
 apt-get -q -y install mysql-server-5.5
 
+# Activate mysql root user from outside
+mysql -u root <<EOF
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '';
+FLUSH PRIVILEGES;
+EOF
+
 # Copy custom commands to /usr/local/bin
 sudo cp /vagrant/vagrant/bin/* /usr/local/bin
 sudo chmod +x /usr/local/bin/*
