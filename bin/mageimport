@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Get Magento settings
-cd /vagrant/public/
+cd /vagrant/public/$1
 if [ $(id -u) = "0" ]; then
 	MAGE_PREFIX="$(su vagrant -c "magerun db:info prefix" 2> /dev/null)"
 else
@@ -31,4 +31,4 @@ for dump in current*.sql.gz; do
 done
 
 # Clear magento cache
-mageclean
+mageclean $1

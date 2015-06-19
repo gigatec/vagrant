@@ -36,7 +36,7 @@ ln -fs /vagrant/public /var/www/html
 
 # Replace contents of default Apache vhost
 # --------------------
-VHOST=$(cat <<EOF
+cat > /etc/apache2/sites-enabled/000-default.conf <<EOF
 NameVirtualHost *:8080
 Listen 8080
 <VirtualHost *:80>
@@ -54,9 +54,15 @@ Listen 8080
   </Directory>
 </VirtualHost>
 EOF
-)
 
-echo "$VHOST" > /etc/apache2/sites-enabled/000-default.conf
+# Activate XDebug
+cat >> /etc/php5/apache2/php.ini <<EOF
+[xdebug]
+xdebug.remote_enable=1
+xdebug.remote_host="172.28.128.1"
+xdebug.remote_port=9000
+xdebug.remote_handler="dbgp"
+EOF
 
 a2enmod rewrite
 service apache2 restart
