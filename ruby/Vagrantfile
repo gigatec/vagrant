@@ -9,7 +9,7 @@ if ARGV[0] == 'up' and ARGV[1]
 end
 
 # Install required plugins
-required_plugins = %w(vagrant-exec vagrant-triggers)
+required_plugins = %w(vagrant-exec vagrant-triggers vagrant-librarian-chef-nochef)
 required_plugins += %w(vagrant-winnfsd) if Vagrant::Util::Platform.windows?
 plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
 if not plugins_to_install.empty?

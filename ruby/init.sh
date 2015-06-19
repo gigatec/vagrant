@@ -13,6 +13,7 @@ sudo chmod +x /usr/local/bin/*
 echo 'alias dir="ls -al"' >> /etc/profile
 echo 'alias root="sudo -i"' >> /etc/profile
 echo 'cd /vagrant/rails' >> /etc/profile
+echo 'source /vagrant/.vagrant/environment' >> /etc/profile
 
 # Install imagemagick
 echo 'Install imagemagick...'
