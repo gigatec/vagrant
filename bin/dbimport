@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+FORCE="0"
+if [ "$1" = "--force" ]; then
+	FORCE="1"
+fi
+
 # Import DB dump
 cd /vagrant/private/
 for dump in current*.sql.gz; do
@@ -7,7 +12,7 @@ for dump in current*.sql.gz; do
 	db="${db:-vagrant}"
 	
 	# Create database and import if not exists
-	if echo 'CREATE DATABASE '$db';' | mysql -u root 2> /dev/null; then
+	if echo 'CREATE DATABASE '$db';' | mysql -u root 2> /dev/null || [ "$FORCE" = "1" ]; then
 		
 		echo 'Import DB dump: '$db'...'
 			
