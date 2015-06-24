@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Import DB (if not exists)
-wpimport
+su - vagrant -c "wpimport"
 
 echo 'Frontend: http://localhost:8080/'
 echo 'PHPMyAdmin: http://localhost:8080/phpmyadmin/ (User: root, Pass: )'
