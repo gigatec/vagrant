@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 
+DIR="$1"
+FORCE="0"
+if [ "$1" = "--force" ]; then
+	DIR="$2"
+	FORCE="1"
+fi
+
 # Get Magento settings
-cd /vagrant/public/$1
+cd /vagrant/public/$DIR
 if [ $(id -u) = "0" ]; then
 	MAGE_PREFIX="$(su vagrant -c "magerun db:info prefix" 2> /dev/null)"
 else
@@ -15,7 +22,7 @@ for dump in current*.sql.gz; do
 	db="${db:-magento}"
 	
 	# Create database and import if not exists
-	if echo 'CREATE DATABASE '$db';' | mysql -u root 2> /dev/null; then
+	if echo 'CREATE DATABASE '$db';' | mysql -u root 2> /dev/null || [ "$FORCE" = "1" ]; then
 
 		echo 'Import DB dump: '$db'...'
 			
@@ -31,4 +38,4 @@ for dump in current*.sql.gz; do
 done
 
 # Clear magento cache
-mageclean $1
+mageclean $DIR
