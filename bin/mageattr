@@ -40,7 +40,7 @@ function bootstrap()
      */
     error_reporting(E_ALL | E_STRICT);
     
-    $mageFilename = 'app/Mage.php';    
+    $mageFilename = '/vagrant/public/app/Mage.php';    
     $maintenanceFile = 'maintenance.flag';    
     require_once $mageFilename;
     
@@ -141,6 +141,7 @@ function get_migration_script_for_attribute($code, $prefix)
     $data = $m->getData();
     $keys_legend = array_keys($real_to_setup_key_legend);
     $new_data    = array();
+    $new_data['group'] = 'General';
     foreach($data as $key=>$value)
     {
         if(in_array($key,$keys_legend)) 
@@ -174,21 +175,12 @@ function get_migration_script_for_attribute($code, $prefix)
     
     //get text for script
     $array = var_export($new_data, true);
+    $array = str_replace("array (", "array(", $array);
+    $array = str_replace("  ", "\t", $array);
     
     //generate script using simple string concatenation, making
     //a single tear fall down the cheek of a CS professor
-    $script = "<?php
-if(! (\$this instanceof Mage_Catalog_Model_Resource_Setup) )
-{
-    throw new Exception(\"Resource Class needs to inherit from \" .
-    \"Mage_Catalog_Model_Resource_Setup for this to work\");
-}
-
-\$attr = $array;
-\$this->addAttribute('catalog_product','$attribute_code',\$attr);
-
-";
-    return $script;
+    return "<?php\n\$this->addAttribute('catalog_product', '$attribute_code', $array);\n";
 }
 
 function error($error)
