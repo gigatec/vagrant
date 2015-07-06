@@ -22,6 +22,12 @@ else
 	MAGE_BACKEND="$(echo "Mage::getConfig()->getNode('admin/routers/adminhtml/args/frontName')->asArray()" | magerun -q -n dev:console 2> /dev/null | sed -n 's/^=> "\([^"]*\)"/\1/gp')"
 fi
 
+# run custom boot.sh if available
+if [ -f "/vagrant/vagrant.boot.sh" ]; then
+	dos2unix /vagrant/vagrant.boot.sh
+	sh /vagrant/vagrant.boot.sh
+fi
+
 echo 'Magento Frontend: http://localhost:8080/'
 echo 'Magento Backend: http://localhost:8080/'$MAGE_BACKEND'/'
 echo 'PHPMyAdmin: http://localhost:8080/phpmyadmin/ (User: root, Pass: )'

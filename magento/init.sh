@@ -12,6 +12,8 @@ apt-get update
 # --------------------
 echo 'Install Apache & PHP...'
 apt-get install -y vim
+apt-get install -y git
+apt-get install -y dos2unix
 apt-get install -y apache2
 apt-get install -y php5
 apt-get install -y libapache2-mod-php5
@@ -120,6 +122,12 @@ sed 's/^# *\(.*Alias.*\)$/\1/g' -i /etc/roundcube/apache.conf
 
 # fix roundcube permissions
 chown vagrant /etc/roundcube/ -R
+
+# run custom init.sh if available
+if [ -f "/vagrant/vagrant.init.sh" ]; then
+	dos2unix /vagrant/vagrant.init.sh
+	sh /vagrant/vagrant.init.sh
+fi
 
 # restart services
 service apache2 restart
