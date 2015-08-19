@@ -28,7 +28,7 @@ sed -i 's/www-data/vagrant/g' /etc/apache2/envvars
 
 # Change PHP settings (short_open_tag)
 sed 's/short_open_tag = Off/short_open_tag = On/g' -i /etc/php5/apache2/php.ini
-sed 's/auto_prepend_file =.*/auto_prepend_file = custom_functions.php/g' -i /etc/php5/apache2/php.ini
+#sed 's/auto_prepend_file =.*/auto_prepend_file = custom_functions.php/g' -i /etc/php5/apache2/php.ini
 
 # Copy custom PHP files to /usr/share/php
 cp /vagrant/vagrant/php/* /usr/share/php
