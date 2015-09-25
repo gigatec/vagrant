@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Install required plugins
+required_plugins = %w(vagrant-exec vagrant-triggers)
+required_plugins += %w(vagrant-winnfsd) if Vagrant::Util::Platform.windows?
+plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+if not plugins_to_install.empty?
+	puts "Installing plugins: #{plugins_to_install.join(' ')}"
+	system "vagrant plugin install #{plugins_to_install.join(' ')}"
+	exec "vagrant #{ARGV.join(' ')}"
+end
+
+Vagrant.configure('2') do |config|
+	# All Vagrant configuration is done here. The most common configuration
+	# options are documented and commented below. For a complete reference,
+	# please see the online documentation at vagrantup.com.
+
+	config.vm.host_name = '<project>.local'
+
+	# Every Vagrant virtual environment requires a box to build off of.
+	config.vm.box = 'ubuntu/trusty64'
+
+	config.vm.provision :shell, :path => 'vagrant/wordpress/init.sh'
+
+	config.vm.network 'private_network', ip: '172.28.128.10'
+
+	# Create a forwarded port mapping which allows access to a specific port
+	# within the machine from a port on the host machine. In the example below,
+	# accessing 'localhost:8080' will access port 80 on the guest machine.
+	config.vm.network :forwarded_port, guest: 80, host: 8080
+
+	config.vm.synced_folder '.', '/vagrant', type: 'nfs'
+
+	config.ssh.forward_agent = true
+
+	config.vm.provider :virtualbox do |vb|
+		vb.customize ['modifyvm', :id, '--memory', '1024']
+		vb.name = '<project>'
+	end
+		
+	config.trigger.before :up do
+		run 'git submodule update --init'
+	end
+
+	[:up, :reload].each do |cmd|
+		config.trigger.after cmd do
+			run_remote '/usr/bin/env bash /vagrant/vagrant/wordpress/boot.sh'
+		end
+	end
+
+end

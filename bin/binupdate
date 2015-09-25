@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sudo cp /vagrant/vagrant/bin/* /usr/local/bin/
+sudo chmod +x /usr/local/bin/*

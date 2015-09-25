@@ -12,10 +12,12 @@ apt-get update
 # --------------------
 echo 'Install Apache & PHP...'
 apt-get install -y vim
+apt-get install -y git
+apt-get install -y dos2unix
 apt-get install -y apache2
 apt-get install -y php5
 apt-get install -y libapache2-mod-php5
-apt-get install -y php5-mysqlnd php5-curl php5-xdebug php5-gd php5-intl php-pear php5-imap php5-mcrypt php5-ming php5-ps php5-pspell php5-recode php5-snmp php5-sqlite php5-tidy php5-xmlrpc php5-xsl php-soap
+apt-get install -y php5-mysqlnd php5-curl php5-xdebug php5-gd php5-intl php-pear php5-imap php5-mcrypt php5-ming php5-ps php5-pspell php5-recode php5-sqlite php5-tidy php5-xmlrpc php5-xsl php-soap
 
 # Install PHPMyAdmin
 apt-get install -y phpmyadmin
@@ -28,6 +30,10 @@ sed -i 's/www-data/vagrant/g' /etc/apache2/envvars
 
 # Change PHP settings (short_open_tag)
 sed 's/short_open_tag = Off/short_open_tag = On/g' -i /etc/php5/apache2/php.ini
+#sed 's/auto_prepend_file =.*/auto_prepend_file = custom_functions.php/g' -i /etc/php5/apache2/php.ini
+
+# Copy custom PHP files to /usr/share/php
+cp /vagrant/vagrant/php/* /usr/share/php
 
 # Delete default apache web dir and symlink mounted vagrant dir from host machine
 # --------------------
@@ -36,7 +42,7 @@ ln -fs /vagrant/public /var/www/html
 
 # Replace contents of default Apache vhost
 # --------------------
-VHOST=$(cat <<EOF
+cat > /etc/apache2/sites-enabled/000-default.conf <<EOF
 NameVirtualHost *:8080
 Listen 8080
 <VirtualHost *:80>
@@ -54,14 +60,20 @@ Listen 8080
   </Directory>
 </VirtualHost>
 EOF
-)
 
-echo "$VHOST" > /etc/apache2/sites-enabled/000-default.conf
+# Activate XDebug
+cat >> /etc/php5/apache2/php.ini <<EOF
+[xdebug]
+xdebug.remote_enable=1
+xdebug.remote_host="172.28.128.1"
+xdebug.remote_port=9000
+xdebug.remote_handler="dbgp"
+EOF
 
 a2enmod rewrite
 service apache2 restart
 
-# Create local.xml Symlink
+# Activate vagrant config
 cd /vagrant/public/app/etc/
 cp local.xml.vagrant local.xml
 
@@ -70,6 +82,12 @@ cp local.xml.vagrant local.xml
 # Install MySQL quietly
 echo 'Install MySQL...'
 apt-get -q -y install mysql-server-5.5
+
+# Activate mysql root user from outside
+mysql -u root <<EOF
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '';
+FLUSH PRIVILEGES;
+EOF
 
 # Copy custom commands to /usr/local/bin
 sudo cp /vagrant/vagrant/bin/* /usr/local/bin
@@ -104,6 +122,12 @@ sed 's/^# *\(.*Alias.*\)$/\1/g' -i /etc/roundcube/apache.conf
 
 # fix roundcube permissions
 chown vagrant /etc/roundcube/ -R
+
+# run custom init.sh if available
+if [ -f "/vagrant/vagrant.init.sh" ]; then
+	dos2unix /vagrant/vagrant.init.sh
+	sh /vagrant/vagrant.init.sh
+fi
 
 # restart services
 service apache2 restart
