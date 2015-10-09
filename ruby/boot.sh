@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
-sed 's/\r//g' -i /vagrant/.vagrant/environment
-source /vagrant/.vagrant/environment
+sed 's/\r//g' -i /vagrant/.vagrant/environment 2> /dev/null
+source /vagrant/.vagrant/environment 2> /dev/null
 export RAILS_ENV=${RAILS_ENV:-development}
 echo "Loading Rails environment: $RAILS_ENV"
 
 # Remount Dynamic data
-mkdir -m 777 -p /vagrant_guest/rails/tmp /vagrant_guest/rails/log
-mount -o bind /vagrant_guest/rails/tmp /vagrant/rails/tmp
-mount -o bind /vagrant_guest/rails/log /vagrant/rails/log
+mkdir -m 777 -p /vagrant_guest/public/tmp /vagrant_guest/public/log
+mount -o bind /vagrant_guest/public/tmp /vagrant/public/tmp
+mount -o bind /vagrant_guest/public/log /vagrant/public/log
 
 # Import DB (if not exists)
 rubyimport
 
 # Run Rails server
-rm -f /vagrant/rails/tmp/pids/server.pid
-su - vagrant -c "cd /vagrant/rails; export RAILS_ENV=$RAILS_ENV; bundle exec rails s -d"
+rm -f /vagrant/public/tmp/pids/server.pid
+su - vagrant -c "cd /vagrant/public; export RAILS_ENV=$RAILS_ENV; bundle exec rails s -d"

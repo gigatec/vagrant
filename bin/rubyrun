@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cd /vagrant/rails
+cd /vagrant/public
 rubykill
 exec bundle exec rails s -d
