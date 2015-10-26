@@ -107,12 +107,21 @@ sed 's/^# \(.*history-search.*\)$/\1/g' -i /etc/inputrc
 # activate AllowNoPassword in phpmyadmin config
 sed 's#// \(.*AllowNoPassword.*\)$#\1#g' -i /etc/phpmyadmin/config.inc.php
 
+# create vagrant maildir
+su vagrant -c 'maildirmake /home/vagrant/Maildir'
+
 # modify postfix main.cf
 cat >> /etc/postfix/main.cf << EOF
 home_mailbox = Maildir/
 mailbox_command = 
-always_bcc = vagrant@localhost
+virtual_maps = regexp:/etc/postfix/virtual-regexp
 EOF
+
+# create postfix virtual-regexp
+cat > /etc/postfix/virtual-regexp << EOF
+/.+@.+/ vagrant@localhost
+EOF
+postmap /etc/postfix/virtual-regexp
 
 # disable postfix bouncing
 sed 's/^.*bounce.*$/#\0/g' -i /etc/postfix/master.cf
