@@ -12,6 +12,8 @@ apt-get update
 # --------------------
 echo 'Install Apache & PHP...'
 apt-get install -y vim
+apt-get install -y git
+apt-get install -y dos2unix
 apt-get install -y apache2
 apt-get install -y php5
 apt-get install -y libapache2-mod-php5
@@ -92,6 +94,10 @@ echo 'alias dir="ls -al"' >> /etc/profile
 echo 'alias root="sudo -i"' >> /etc/profile
 echo 'cd /vagrant/public' >> /etc/profile
 
+# Install imagemagick
+echo 'Install imagemagick...'
+apt-get install -y imagemagick libmagickwand-dev
+
 # install mailling softtware
 apt-get install -y postfix courier-imap roundcube
 
@@ -101,12 +107,21 @@ sed 's/^# \(.*history-search.*\)$/\1/g' -i /etc/inputrc
 # activate AllowNoPassword in phpmyadmin config
 sed 's#// \(.*AllowNoPassword.*\)$#\1#g' -i /etc/phpmyadmin/config.inc.php
 
+# create vagrant maildir
+su vagrant -c 'maildirmake /home/vagrant/Maildir'
+
 # modify postfix main.cf
 cat >> /etc/postfix/main.cf << EOF
 home_mailbox = Maildir/
 mailbox_command = 
-always_bcc = vagrant@localhost
+virtual_maps = regexp:/etc/postfix/virtual-regexp
 EOF
+
+# create postfix virtual-regexp
+cat > /etc/postfix/virtual-regexp << EOF
+/.+@.+/ vagrant@localhost
+EOF
+postmap /etc/postfix/virtual-regexp
 
 # disable postfix bouncing
 sed 's/^.*bounce.*$/#\0/g' -i /etc/postfix/master.cf
@@ -116,6 +131,12 @@ sed 's/^# *\(.*Alias.*\)$/\1/g' -i /etc/roundcube/apache.conf
 
 # fix roundcube permissions
 chown vagrant /etc/roundcube/ -R
+
+# run custom init.sh if available
+if [ -f "/vagrant/vagrant.init.sh" ]; then
+	dos2unix /vagrant/vagrant.init.sh
+	sh /vagrant/vagrant.init.sh
+fi
 
 # restart services
 service apache2 restart

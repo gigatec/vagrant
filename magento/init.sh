@@ -98,6 +98,10 @@ echo 'alias dir="ls -al"' >> /etc/profile
 echo 'alias root="sudo -i"' >> /etc/profile
 echo 'cd /vagrant/public' >> /etc/profile
 
+# Install imagemagick
+echo 'Install imagemagick...'
+apt-get install -y imagemagick libmagickwand-dev
+
 # install mailling softtware
 apt-get install -y postfix courier-imap roundcube
 

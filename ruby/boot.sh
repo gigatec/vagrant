@@ -19,3 +19,7 @@ rubyimport
 # Run Rails server
 rm -f /vagrant/public/tmp/pids/server.pid
 su - vagrant -c "cd /vagrant/public; export RAILS_ENV=$RAILS_ENV; bundle exec rails s -d"
+
+echo 'Frontend: http://localhost:3000/'
+echo 'PHPMyAdmin: http://localhost:8080/phpmyadmin/ (User: root, Pass: )'
+echo 'Webmail: http://localhost:8080/roundcube/ (User: vagrant, Pass: vagrant, Host: localhost)'
