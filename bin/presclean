@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Clear magento cache
+echo 'Clear presta cache...'
+rm -rf /vagrant/public/cache/*
