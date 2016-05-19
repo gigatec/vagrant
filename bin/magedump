@@ -6,4 +6,4 @@ dump="current"
 if [ $db != 'magento' ]; then
 	dump="$dump-$db"
 fi
-magerun db:dump --compression=gz --strip="@development @search @idx core_cache_tag" /vagrant/private/$dump
+magerun db:dump $@ --compression=gz --strip="@development @search @idx core_cache_tag" /vagrant/private/$dump
