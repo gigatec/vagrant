@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /vagrant/private
+mysqldump -u root typo3 | gzip > current.sql.gz
