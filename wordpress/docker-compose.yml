@@ -1,0 +1,8 @@
+web:
+  image: gigatec/ubuntu-14.04-dev
+  container_name: <project>_dev
+  volumes:
+    - ./:/vagrant
+    - ./run.sh:/run.sh
+  ports:
+    - 8080:80
