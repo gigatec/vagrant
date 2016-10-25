@@ -3,6 +3,5 @@ web:
   container_name: <project>_dev
   volumes:
     - ./:/vagrant
-    - ./run.sh:/run.sh
   ports:
     - 8080:80
