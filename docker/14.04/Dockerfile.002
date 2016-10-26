@@ -1,0 +1,3 @@
+FROM gigatec/ubuntu-14.04-dev
+
+ADD run.sh /run.sh
