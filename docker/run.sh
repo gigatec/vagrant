@@ -9,6 +9,8 @@
 /etc/init.d/ondemand start
 /etc/init.d/rc.local start
 
+echo "Loading Docker System: ${DOCKER_SYSTEM}..."
+
 case "$DOCKER_SYSTEM" in
 
 wordpress)
