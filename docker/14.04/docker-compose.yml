@@ -1,0 +1,9 @@
+web:
+  image: gigatec/ubuntu-14.04-dev
+  container_name: <project>_dev
+  environment:
+    - DOCKER_SYSTEM=<wordpress|magento|plain|>
+  volumes:
+    - ./:/vagrant
+  ports:
+    - 8080:80
