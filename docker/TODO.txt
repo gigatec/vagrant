@@ -1,0 +1,8 @@
+update composer
+install sudo
+add logging to run.sh
+alias ll="ls -al"
+node+npm installieren (+ npm install -g gulp)
+add /home/vagrant
+install ioncube
+install inotify-tools
