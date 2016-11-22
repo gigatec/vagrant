@@ -1,0 +1,7 @@
+web:
+  image: gigatec/ruby-2.3.1-dev
+  container_name: <project>.dev
+  volumes:
+    - ./:/vagrant
+  expose:
+    - 80
