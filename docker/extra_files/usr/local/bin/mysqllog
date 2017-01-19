@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo 'SET GLOBAL general_log_file = "/tmp/mysql.log"; SET GLOBAL general_log = "ON";' | mysql -u root 
+sudo tail -f /tmp/mysql.log 

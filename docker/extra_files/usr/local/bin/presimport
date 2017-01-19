@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+DIR="$1"
+FORCE="0"
+if [ "$1" = "--force" ]; then
+	DIR="$2"
+	FORCE="1"
+fi
+
+
+# Import DB dump
+cd /vagrant/private/
+for dump in current*.sql.gz; do
+	db="$(echo $dump | sed -n 's/current-\(.*\).sql.gz/\1/gp')"
+	db="${db:-vagrant}"
+	
+	# Create database and import if not exists
+	if echo 'CREATE DATABASE '$db';' | mysql -u root 2> /dev/null || [ "$FORCE" = "1" ]; then
+
+		echo 'Import DB dump: '$db'...'
+			
+		# Import
+		zcat $dump | mysql -u root $db
+		
+		# Adjust DB
+		echo 'UPDATE ps_configuration SET value="localhost:8080" WHERE name="PS_SHOP_DOMAIN";' | mysql -u root $db
+		echo 'UPDATE ps_configuration SET value="localhost:8080" WHERE name="PS_SHOP_DOMAIN_SSL";' | mysql -u root $db
+		echo 'UPDATE ps_shop_url SET domain="localhost:8080";' | mysql -u root $db
+		echo 'UPDATE ps_shop_url SET domain_ssl="localhost:8080"' | mysql -u root $db
+
+		# run custom init.sh if available
+		if [ -f "/vagrant/vagrant.init.sql" ]; then
+			dos2unix /vagrant/vagrant.init.sql
+			mysql -u root $db < /vagrant/vagrant.init.sql
+		fi
+	
+	fi
+done
+
+# Clear magento cache
+presclean $DIR

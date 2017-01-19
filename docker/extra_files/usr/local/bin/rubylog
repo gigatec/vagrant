@@ -1,0 +1,3 @@
+#!/bin/sh
+
+tail -f /vagrant/public/log/*.log

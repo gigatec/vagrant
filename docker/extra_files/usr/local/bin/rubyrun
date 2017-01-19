@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd /vagrant/public
+rubykill
+exec bundle exec rails s -d -b 0.0.0.0

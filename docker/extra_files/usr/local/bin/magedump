@@ -1,0 +1,9 @@
+#!/bin/sh
+
+cd /vagrant/public
+db="$(magerun db:info dbname)"
+dump="current"
+if [ $db != 'magento' ]; then
+	dump="$dump-$db"
+fi
+magerun db:dump $@ --compression=gz --strip="@development @search @idx core_cache_tag" /vagrant/private/$dump

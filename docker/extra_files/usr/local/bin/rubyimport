@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+if [ "$1" = "--force" ]; then
+	FORCE="1"
+fi
+
+# Import DB dump
+cd /vagrant/private/
+for dump in current*.sql.gz; do
+	if [ -e "$dump" ]; then
+		db="$(echo $dump | sed -n 's/current-\(.*\).sql.gz/\1/gp')"
+		db="${db:-ruby}"
+		
+		# Create database and import if not exists
+		if echo 'CREATE DATABASE '$db';' | mysql -u root 2> /dev/null || [ "$FORCE" = "1" ]; then
+
+			echo 'Import DB dump: '$db'...'
+				
+			# Import
+			zcat $dump | mysql -u root $db
+		fi
+	fi
+done

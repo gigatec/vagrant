@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd /vagrant/public
+rubykill
+bundle exec rdebug-ide --port 1234 --dispatcher-port 26162 -h 0.0.0.0 -- bin/rails s -b 0.0.0.0
