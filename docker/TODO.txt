@@ -6,3 +6,5 @@ node+npm installieren (+ npm install -g gulp)
 add /home/vagrant
 install ioncube
 install inotify-tools
+phpmyadmin upload problem
+/usr/share/phpmyadmin/show_config_errors.php (php7)
