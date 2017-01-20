@@ -1,10 +1,10 @@
 #!/bin/bash
 
 usage() {
-	echo "usage: docker-build.sh <image> <command> <arguments...>"
+	echo "usage: docker-build.sh <image> <command> <arguments> [base]"
 	echo ""
 	echo "available commands:"
-	echo "  add <local_file/dir> <image_file/dir>"
+	echo "  add '<local_file/dir> <image_file/dir>'"
 	echo "  run <shell_command>"
 	echo "  cmd <shell_command>"
 	exit 1
@@ -21,7 +21,10 @@ fi
 
 IMAGE="$1"
 COMMAND="$2"
-ARGUMENTS="$3 $4"
+ARGUMENTS="$3"
+BASE="$1"
+
+[ ! -z "$4" ] && BASE="$4"
 
 case "$COMMAND" in
 add)
@@ -43,7 +46,7 @@ esac
 
 DOCKERFILE=$(tempfile -d . --p Dock)
 	
-dockerfile "$IMAGE" "$COMMAND" | tee "$DOCKERFILE"
+dockerfile "$BASE" "$COMMAND" | tee "$DOCKERFILE"
 docker build -t "$IMAGE" -f "$DOCKERFILE" .
 rm "$DOCKERFILE"
 
